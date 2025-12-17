@@ -38,6 +38,7 @@ import {
   UserCog,
   SlidersHorizontal,
   type LucideIcon,
+  Router,
 } from "lucide-react";
 
 import { NavMain } from "@/components/layout/sidebar/nav-main";
@@ -102,6 +103,7 @@ const iconMap: { [key: string]: LucideIcon } = {
   Network,
   UserCog,
   SlidersHorizontal,
+  Router
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

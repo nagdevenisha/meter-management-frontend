@@ -80,6 +80,13 @@
           "roles": ["admin", "developer"]
         },
         {
+          "title": "Router Events",
+          "url": "/live-monitoring/router-events",
+          "icon": "Router",
+          "roles": ["admin", "developer"]
+        },
+        
+        {
           "title": "Alerts",
           "url": "/live-monitoring/alerts",
           "icon": "BellRing",

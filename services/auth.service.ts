@@ -110,12 +110,20 @@ class AuthService {
     const res = await api.delete(`/auth/users/${id}`);
     return res.data;
   }
-
+  
+  // 8. Change Password via Forgot Password
+  async forgotPassword(email: string): Promise<AuthResponse> {
+    const data = { email };  // create the payload
+    const res = await api.post("/auth/forgot-password", data);
+    return res.data;
+}
   // NEW: Get All Users with filters, search, pagination
   async getAllUsers(params: GetAllUsersParams = {}): Promise<PaginatedUsersResponse> {
     const res = await api.get("/auth/users", { params });
     return res.data;
   }
+
+
 }
 
 export default new AuthService();
