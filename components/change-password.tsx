@@ -61,30 +61,35 @@ const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialogProps)
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
+  e.preventDefault();
 
-    setIsLoading(true);
-    
-    // Simulate API call
-   
-       try {
-         const changePasswordData = {
-           currentPassword: oldPassword,
-           newPassword: newPassword,
-         };
-         const res = await authService.changePassword(changePasswordData);
-         console.log("Login response:", res.data.user);
-       } catch (err) {
-        //  setError(err?.response?.data?.msg || "Invalid email or password");
-       } finally {
-          setIsLoading(false);
-       }
-    setIsLoading(false);
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+
+  try {
+    const changePasswordData = {
+      currentPassword: oldPassword,
+      newPassword: newPassword,
+    };
+
+    await authService.changePassword(changePasswordData);
+
+    // ✅ success
     resetForm();
     onOpenChange(false);
-  };
+    router.push("/dashboard");
+
+  } catch (err: any) {
+    setErrors({
+      oldPassword:
+        err?.response?.data?.message || "Current password is incorrect",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleSkip = () => {
     onOpenChange(false);

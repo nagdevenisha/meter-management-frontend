@@ -36,7 +36,7 @@ export function LoginForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    // setError("");
     setLoading(true);
 
     try {
@@ -153,7 +153,7 @@ export function LoginForm({
               type="email"
               placeholder="you@inditronics.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {setEmail(e.target.value);setError("");}}
               required
             />
           </Field>
@@ -163,7 +163,7 @@ export function LoginForm({
               <FieldLabel>Password</FieldLabel>
 
               <p
-                onClick={() => setPasswordReset(true)}
+                onClick={() => {setPasswordReset(true);setError("");}}
                 className="text-xs text-primary hover:underline cursor-pointer"
               >
                 Forgot password?

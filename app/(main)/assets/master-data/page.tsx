@@ -128,6 +128,7 @@ export default function MasterDataPage() {
           limit: filters.limit,
         });
         setMeters(res.meters);
+        console.log(res.meters);
         setTotalMeters(res.pagination.total);
       } else if (activeTab === "groups") {
         const res = await AssetsService.getThingGroups({ limit: 50 });

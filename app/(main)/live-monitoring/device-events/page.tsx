@@ -198,7 +198,11 @@ const [mappingsLoading, setMappingsLoading] = useState(true);
   };
 
   const handleApplyFilters = () => {
-    setFilters({ ...tempFilters, page: 1 });
+     setFilters({
+      ...tempFilters,
+      type: tempFilters.type === "all" ? "" : tempFilters.type,
+      page: 1,
+    });
     setStartDateTime(tempStart);
     setEndDateTime(tempEnd);
     setDialogOpen(false);
