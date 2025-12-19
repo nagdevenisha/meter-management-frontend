@@ -16,15 +16,11 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/refresh")
+      !originalRequest.url?.includes("/auth/refresh-token")
     ) {
       originalRequest._retry = true;
       try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1"}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        await api.post("/auth/refresh-token");
         return api(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed:", refreshError);

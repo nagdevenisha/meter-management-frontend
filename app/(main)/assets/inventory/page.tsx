@@ -423,11 +423,11 @@ export default function ListMetersPage() {
                     <div className="space-y-2">
                       <Label>Registration Status</Label>
                       <Select
-                        value={tempFilters.status || "all"}
+                        value={tempFilters.status ?? "all"}
                         onValueChange={(v) =>
                           setTempFilters((p) => ({
                             ...p,
-                            status: v === "all" ? "" : v,
+                            status: v === "all" ? "" : v.toLowerCase(),
                           }))
                         }
                       >
@@ -436,12 +436,12 @@ export default function ListMetersPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All</SelectItem>
-                          <SelectItem value="REGISTERED">Registered</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value="registered">Registered</SelectItem>
+                          <SelectItem value="unregistered">unregistered</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
+                  </div> 
 
                   <DialogFooter>
                     <Button

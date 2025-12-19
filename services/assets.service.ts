@@ -79,13 +79,23 @@ class AssetsService {
 
   // 2. Get All Meters (with AWS sync status + extra fields)
   async getMeters(filters: MeterFilters = {}): Promise<PaginatedMeters> {
-    const params = new URLSearchParams();
-    if (filters.page) params.append("page", String(filters.page));
-    if (filters.limit) params.append("limit", String(filters.limit));
+  const params = new URLSearchParams();
+  console.log(filters)
 
-    const res = await api.get(`/assets/meters?${params.toString()}`);
-    return res.data.data;
-  }
+  if (filters.page) params.append("page", String(filters.page));
+  if (filters.limit) params.append("limit", String(filters.limit));
+  if (filters.meterType) params.append("meterType", String(filters.meterType));
+
+  if (filters.search) params.append("meterId", filters.search);
+  if (filters.status) params.append("status", filters.status);
+  if (filters.powerHATStatus)
+    params.append("powerHATStatus", filters.powerHATStatus);
+  if (filters.groupName) params.append("groupName", filters.groupName);
+
+  const res = await api.get(`/assets/meters?${params.toString()}`);
+  return res.data.data;
+}
+
 
   // 3. Update Meter (by meterId)
   async updateMeter(

@@ -433,7 +433,7 @@ export default function ListHouseholdsPage() {
                       </Select>
                     </div>
 
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <Label>AWS Group</Label>
                       <Input
                         placeholder="e.g., armenia_meter"
@@ -445,7 +445,7 @@ export default function ListHouseholdsPage() {
                           }))
                         }
                       />
-                    </div>
+                    </div> */}
 
                     <div className="space-y-2">
                       <Label>Contact Email</Label>

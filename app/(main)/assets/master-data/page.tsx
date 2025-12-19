@@ -123,10 +123,14 @@ export default function MasterDataPage() {
     setLoading(true);
     try {
       if (activeTab === "meters") {
-        const res = await AssetsService.getMeters({
-          page: filters.page,
-          limit: filters.limit,
-        });
+      const res = await AssetsService.getMeters({
+        page: filters.page,
+        limit: filters.limit,
+        search: debouncedSearch || undefined,
+        status: filters.status || undefined,
+        powerHATStatus: filters.powerHATStatus || undefined,
+        groupName: filters.groupName || undefined,
+      });
         setMeters(res.meters);
         console.log(res.meters);
         setTotalMeters(res.pagination.total);
@@ -152,7 +156,7 @@ export default function MasterDataPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [activeTab, filters]);
+  }, [activeTab, filters.page, filters.limit, filters.status, filters.powerHATStatus, filters.groupName, debouncedSearch]);
 
   useEffect(() => {
     fetchData();
@@ -373,8 +377,8 @@ export default function MasterDataPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All</SelectItem>
-                          <SelectItem value="REGISTERED">Registered</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                              <SelectItem value="registered">Registered</SelectItem>
+                              <SelectItem value="unregistered">unregistered</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
