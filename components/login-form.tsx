@@ -63,7 +63,12 @@ export function LoginForm({
           }
       }
     } catch (err: any) {
-      setError(err?.response?.data?.msg || "Invalid email or password");
+      let msg = err?.response?.data?.msg || "Invalid email or password";
+
+      // Remove [body] or similar prefixes
+      msg = msg.replace(/^\[.*?\]\s*/, ""); 
+
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -71,19 +76,33 @@ export function LoginForm({
 
 
   // Handle password reset 
-  const handlePasswordReset = async() => {
-     if (!emailForReset) {
-      toast.error("Email required");
+  const handlePasswordReset = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!emailForReset) {
+    toast.error("Email required");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const res = await authService.forgotPassword(emailForReset);
+     console.log(res.data)
+    // Check if backend actually sent email
+    if (res.data===null) {
+      toast.error("Email not found");
       return;
     }
-    try {
-      await authService.forgotPassword(emailForReset);
-      toast.success(`Email Sent sucessfully`);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create user");
-    }
-   
+
+    toast.success("Email sent successfully!");
+    setEmailForReset(""); // reset input
+  } catch (err: any) {
+    toast.error(err?.response?.data?.msg || err.message || "Failed to send email");
+  } finally {
+    setLoading(false);
   }
+};
+
   return (
   <div className="flex flex-col gap-6 w-full">
       {/* --------------------- PASSWORD RESET FORM -------------------- */}
@@ -95,7 +114,7 @@ export function LoginForm({
           </h1>
 
           <p className="text-sm text-muted-foreground max-w-xs">
-           Enter your email and we'll email you a password recovery code.
+           Enter your email and we email you a password recovery code.
           </p>
 
           <Field>

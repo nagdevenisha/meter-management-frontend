@@ -377,8 +377,8 @@ export default function MasterDataPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All</SelectItem>
-                          <SelectItem value="REGISTERED">Registered</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                              <SelectItem value="registered">Registered</SelectItem>
+                              <SelectItem value="unregistered">unregistered</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

@@ -132,8 +132,8 @@ export default function ReportsPage() {
 
     try {
       const res = await ReportService.getReport(filters);
-      setEvents(res.events || []);
-      setTotal(res.pagination?.total || 0);
+      setEvents(res.data.events || []);
+      setTotal(res.data.pagination?.total || 0);
     } catch (err: any) {
       toast.error("Failed to load events preview");
       setEvents([]);

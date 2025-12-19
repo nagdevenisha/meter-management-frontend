@@ -113,6 +113,7 @@ export default function DecommissionPage() {
   const [reason, setReason] = useState("");
   const [decommissioning, setDecommissioning] = useState(false);
   const [retryStatus, setRetryStatus] = useState<RetryStatus | null>(null);
+  
 
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -224,86 +225,103 @@ export default function DecommissionPage() {
   };
 
   const handleDecommission = async () => {
-    if (!selectedMeter) return;
+  if (!selectedMeter) return;
 
-    setDecommissioning(true);
+  setDecommissioning(true);
+  setRetryStatus({
+    attempt: 1,
+    maxAttempts: 3,
+    currentTimeout: 10000,
+    status: "sending",
+    message: "Initiating decommission process...",
+  });
+
+  try {
+    const progressSimulation = simulateRetryProgress();
+
+    const result: DecommissionResponse = (
+      await DecommissionService.decommissionMeter({
+        meterId: selectedMeter.meterId,
+        reason: reason || undefined,
+      })
+    ).data;
+
+    // ✅ SUCCESS
     setRetryStatus({
       attempt: 1,
       maxAttempts: 3,
-      currentTimeout: 10000,
-      status: "sending",
-      message: "Initiating decommission process...",
+      currentTimeout: 0,
+      status: "success",
+      message: "Device acknowledged - decommissioned successfully!",
     });
 
-    try {
-      // Start simulating progress (this runs in parallel)
-      const progressSimulation = simulateRetryProgress();
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Actual API call
-      const result: DecommissionResponse = (
-        await DecommissionService.decommissionMeter({
-          meterId: selectedMeter.meterId,
-          reason: reason || undefined,
-        })
-      ).data;
+    toast.success(
+      <div>
+        <strong>{selectedMeter.meterId}</strong> decommissioned successfully
+        <br />
+        <span className="text-xs text-muted-foreground">
+          From household: {result.previousHouseholdHhid}
+        </span>
+      </div>
+    );
 
-      // Success!
-      setRetryStatus({
-        attempt: 1,
-        maxAttempts: 3,
-        currentTimeout: 0,
-        status: "success",
-        message: "Device acknowledged - decommissioned successfully!",
-      });
+    // // 🔥 INSTANT UI UPDATE
+    //   setHouseholds((prev) =>
+    //     prev.map((h) =>
+    //       h.hhid === result.previousHouseholdHhid
+    //         ? {
+    //             ...h,
+    //             isAssigned: false,
+    //             assignedMeterId: null,
+    //           }
+    //         : h
+    //     )
+    //   );
 
-      // Wait a moment to show success state
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    //   // 🔄 background sync
+    // fetchHouseholds();
 
-      toast.success(
-        <div>
-          <strong>{selectedMeter.meterId}</strong> decommissioned successfully
-          <br />
-          <span className="text-xs text-muted-foreground">
-            From household: {result.previousHouseholdHhid}
-          </span>
-        </div>
-      );
 
-      setDialogOpen(false);
-      setReason("");
-      setSelectedMeter(null);
-      setRetryStatus(null);
-      fetchAssignedMeters();
-      if (activeTab === "logs") fetchLogs();
-    } catch (err: any) {
-      setRetryStatus({
-        attempt: 3,
-        maxAttempts: 3,
-        currentTimeout: 0,
-        status: "failed",
-        message:
-          err.response?.data?.msg ||
-          "Failed after 3 attempts - device did not respond",
-      });
+    // cleanup
+    setDialogOpen(false);
+    setReason("");
+    setSelectedMeter(null);
+    setRetryStatus(null);
 
-      // Wait to show error state
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+    fetchAssignedMeters();
+    if (activeTab === "logs") fetchLogs();
+  } catch (err: any) {
+    setRetryStatus({
+      attempt: 3,
+      maxAttempts: 3,
+      currentTimeout: 0,
+      status: "failed",
+      message:
+        err.response?.data?.msg ||
+        "Failed after 3 attempts - device did not respond",
+    });
 
-      toast.error(
-        <div>
-          <strong>Decommission Failed</strong>
-          <br />
-          <span className="text-xs">
-            {err.response?.data?.msg || "Device did not respond after 3 attempts"}
-          </span>
-        </div>
-      );
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      setRetryStatus(null);
-    } finally {
-      setDecommissioning(false);
-    }
-  };
+    toast.error(
+      <div>
+        <strong>Decommission Failed</strong>
+        <br />
+        <span className="text-xs">
+          {err.response?.data?.msg ||
+            "Device did not respond after 3 attempts"}
+        </span>
+      </div>
+    );
+
+    setRetryStatus(null);
+  } finally {
+    setDecommissioning(false);
+  }
+};
+
 
   const openDecommissionDialog = (meter: AssignedMeter) => {
     setSelectedMeter(meter);

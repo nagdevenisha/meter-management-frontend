@@ -55,12 +55,22 @@ class OtaService {
     return res.data.data;
   }
 
-  async getMyJobs(page = 1, limit = 10, p0: string | undefined): Promise<OtaJobsResponse> {
-    const res = await api.get(`${this.baseURL}/my-jobs`, {
-      params: { page, limit },
-    });
-    return res.data.data;
-  }
+    async getMyJobs(
+      page = 1,
+      limit = 10,
+      search?: string
+     ): Promise<OtaJobsResponse> {
+      const res = await api.get(`${this.baseURL}/my-jobs`, {
+        params: {
+          page,
+          limit,
+          ...(search ? { search } : {}), // ✅ send only if present
+        },
+      });
+
+      return res.data.data;
+    }
+
 }
 
 export default new OtaService();

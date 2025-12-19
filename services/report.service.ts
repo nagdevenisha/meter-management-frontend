@@ -26,21 +26,25 @@ class ReportService {
   async getReport(filters: ReportFilters): Promise<any> {
     const params = new URLSearchParams();
 
-    // Sanitize: Only add valid, non-function, non-object values
     Object.entries(filters).forEach(([key, value]) => {
       if (value === undefined || value === null) return;
-      if (typeof value === "function") return; // Block functions
-      if (typeof value === "object") return; // Block objects
+      if (typeof value === "function") return;
       if (value === "") return;
+
+      if (value instanceof Date) {
+        params.append(key, String(Math.floor(value.getTime() / 1000)));
+        return;
+      }
 
       params.append(key, String(value));
     });
 
     const url = `${this.baseURL}?${params.toString()}`;
-    console.log("Fetching report:", url); // Debug
+    console.log("Fetching report:", url);
 
     const res = await api.get(url, {
-      responseType: filters.format && filters.format !== "json" ? "blob" : "json",
+      responseType:
+        filters.format && filters.format !== "json" ? "blob" : undefined,
     });
 
     return res.data;

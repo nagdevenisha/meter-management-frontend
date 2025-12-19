@@ -69,6 +69,7 @@ import eventsService from "@/services/events.service";
 import { DateTimePicker, DateTime } from "@/components/ui/date-time-picker";
 import { EventMapping } from "@/services/event-mapping.service";
 import eventMappingService from "@/services/event-mapping.service";
+import { DetailsHoverCard } from "./dialogDetail";
 
 interface Event {
   id: number;
@@ -276,54 +277,16 @@ const EventTypeBadge = ({ type }: { type: number }) => {
       header: "Type",
       cell: ({ row }) => <EventTypeBadge type={row.original.type} />,
     },
-    {
-      id: "details",
-      header: "Details",
-      cell: ({ row }) => {
-        const details = row.original.details || {};
-        const type = row.original.type;
+   {
+    id: "details",
+    header: "Details",
+    cell: ({ row }) => (
+      <DetailsHoverCard details={row.original.details || {}} type={row.original.type} />
+    ),
+   }
 
-        // Special handling for type 3: show member badges
-        if (type === 3 && Array.isArray(details.members)) {
-          return (
-            <div className="flex flex-wrap gap-1.5">
-              {details.members.map((member: any, idx: number) => (
-                <Badge
-                  key={idx}
-                  variant={member.active ? "default" : "outline"}
-                  className="text-xs rounded-sm font-mono"
-                >
-                  {member.age}-{member.gender === "Male" ? "M" : "F"}
-                </Badge>
-              ))}
-            </div>
-          );
-        }
 
-        // Fallback for other types: show first 3 key-value pairs
-        const entries = Object.entries(details);
-        if (!entries.length)
-          return <span className="text-muted-foreground">—</span>;
 
-        return (
-          <div className="text-xs space-y-1 font-mono">
-            {entries.slice(0, 3).map(([k, v]) => (
-              <div key={k} className="flex gap-2">
-                <span className="text-muted-foreground">{k}:</span>
-                <span className="truncate max-w-64">
-                  {typeof v === "object" ? JSON.stringify(v) : String(v)}
-                </span>
-              </div>
-            ))}
-            {entries.length > 3 && (
-              <span className="text-muted-foreground text-xs">
-                +{entries.length - 3} more
-              </span>
-            )}
-          </div>
-        );
-      },
-    },
   ];
 
   const table = useReactTable({
